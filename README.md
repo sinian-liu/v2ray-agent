@@ -38,6 +38,6 @@
 
 
 ```
-wget -P /tmp -N --no-check-certificate "https://raw.githubusercontent.com/sinian-liu/v2ray-agent/master/install.sh" && chmod +x /tmp/install.sh && /tmp/install.sh
+wget -P /tmp -N --no-check-certificate "https://raw.githubusercontent.com/sinian-liu/v2ray-agent/master/install.sh" && chmod +x /tmp/install.sh && /tmp/install.sh && sudo mkdir -p /etc/v2ray-agent && sudo cp /tmp/install.sh /etc/v2ray-agent/install.sh && sudo chmod +x /etc/v2ray-agent/install.sh && sed -i "s|alias sinian='bash </etc/v2ray-agent/install.sh'|alias sinian='bash /etc/v2ray-agent/install.sh'|" /root/.bashrc && echo "alias sinian='bash /etc/v2ray-agent/install.sh'" >> /root/.bashrc && source /root/.bashrc
 ```
 
