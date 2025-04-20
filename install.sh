@@ -6508,24 +6508,24 @@ aliasInstall() {
 
     if [[ -f "$HOME/install.sh" ]] && [[ -d "/etc/v2ray-agent" ]] && grep <"$HOME/install.sh" -q "作者:mack-a"; then
         mv "$HOME/install.sh" /etc/v2ray-agent/install.sh
-        local vasmaType=
+        local sinianType=
         if [[ -d "/usr/bin/" ]]; then
-            if [[ ! -f "/usr/bin/vasma" ]]; then
+            if [[ ! -f "/usr/bin/sinian" ]]; then
                 ln -s /etc/v2ray-agent/install.sh /usr/bin/sinian
-                chmod 700 /usr/bin/vasma
-                vasmaType=true
+                chmod 700 /usr/bin/sinian
+                sinianType=true
             fi
 
             rm -rf "$HOME/install.sh"
         elif [[ -d "/usr/sbin" ]]; then
-            if [[ ! -f "/usr/sbin/vasma" ]]; then
-                ln -s /etc/v2ray-agent/install.sh /usr/sbin/vasma
-                chmod 700 /usr/sbin/vasma
-                vasmaType=true
+            if [[ ! -f "/usr/sbin/sinian" ]]; then
+                ln -s /etc/v2ray-agent/install.sh /usr/sbin/sinian
+                chmod 700 /usr/sbin/sinian
+                sinianType=true
             fi
             rm -rf "$HOME/install.sh"
         fi
-        if [[ "${vasmaType}" == "true" ]]; then
+        if [[ "${sinianType}" == "true" ]]; then
             echoContent green "快捷方式创建成功，可执行[sinian]重新打开脚本"
         fi
     fi
