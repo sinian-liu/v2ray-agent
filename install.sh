@@ -2357,58 +2357,31 @@ checkWgetShowProgress() {
 }
 # 安装xray
 installXray() {
-    readInstallType
-    local prereleaseStatus=false
-    if [[ "$2" == "true" ]]; then
-        prereleaseStatus=true
-    fi
+	readInstallType
+	echoContent skyBlue "\n进度  $1/${totalProgress} : 安装Xray"
 
-    echoContent skyBlue "\n进度  $1/${totalProgress} : 安装Xray"
+	if [[ "${coreInstallType}" != "1" ]]; then
+		# 使用指定版本的 Xray 链接
+		echoContent green " ---> 使用指定版本的 Xray-core: v25.3.6"
+		
+		# 使用固定的下载链接
+		if wget --help | grep -q show-progress; then
+			wget -c -q --show-progress -P /etc/v2ray-agent/xray/ "https://github.com/sinian-liu/v2ray-agent/releases/download/v25.3.6/Xray-linux-64.zip"
+		else
+			wget -c -P /etc/v2ray-agent/xray/ "https://github.com/sinian-liu/v2ray-agent/releases/download/v25.3.6/Xray-linux-64.zip" >/dev/null 2>&1
+		fi
 
-    if [[ ! -f "/etc/v2ray-agent/xray/xray" ]]; then
-
-        version=$(curl -s "https://api.github.com/repos/XTLS/Xray-core/releases?per_page=5" | jq -r ".[]|select (.prerelease==${prereleaseStatus})|.tag_name" | head -1)
-        echoContent green " ---> Xray-core版本:${version}"
-        if [[ "${release}" == "alpine" ]]; then
-            wget -c -q -P /etc/v2ray-agent/xray/ "https://github.com/XTLS/Xray-core/releases/download/${version}/${xrayCoreCPUVendor}.zip"
-        else
-            wget -c -q "${wgetShowProgressStatus}" -P /etc/v2ray-agent/xray/ "https://github.com/XTLS/Xray-core/releases/download/${version}/${xrayCoreCPUVendor}.zip"
-        fi
-
-        if [[ ! -f "/etc/v2ray-agent/xray/${xrayCoreCPUVendor}.zip" ]]; then
-            read -r -p "核心下载失败，请重新尝试安装，是否重新尝试？[y/n]" downloadStatus
-            if [[ "${downloadStatus}" == "y" ]]; then
-                installXray "$1"
-            fi
-        else
-            unzip -o "/etc/v2ray-agent/xray/${xrayCoreCPUVendor}.zip" -d /etc/v2ray-agent/xray >/dev/null
-            rm -rf "/etc/v2ray-agent/xray/${xrayCoreCPUVendor}.zip"
-
-            version=$(curl -s https://api.github.com/repos/Loyalsoldier/v2ray-rules-dat/releases?per_page=1 | jq -r '.[]|.tag_name')
-            echoContent skyBlue "------------------------Version-------------------------------"
-            echo "version:${version}"
-            rm /etc/v2ray-agent/xray/geo* >/dev/null 2>&1
-
-            if [[ "${release}" == "alpine" ]]; then
-                wget -c -q -P /etc/v2ray-agent/xray/ "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/${version}/geosite.dat"
-                wget -c -q -P /etc/v2ray-agent/xray/ "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/${version}/geoip.dat"
-            else
-                wget -c -q "${wgetShowProgressStatus}" -P /etc/v2ray-agent/xray/ "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/${version}/geosite.dat"
-                wget -c -q "${wgetShowProgressStatus}" -P /etc/v2ray-agent/xray/ "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/${version}/geoip.dat"
-            fi
-
-            chmod 655 /etc/v2ray-agent/xray/xray
-        fi
-    else
-        if [[ -z "${lastInstallationConfig}" ]]; then
-            echoContent green " ---> Xray-core版本:$(/etc/v2ray-agent/xray/xray --version | awk '{print $2}' | head -1)"
-            read -r -p "是否更新、升级？[y/n]:" reInstallXrayStatus
-            if [[ "${reInstallXrayStatus}" == "y" ]]; then
-                rm -f /etc/v2ray-agent/xray/xray
-                installXray "$1" "$2"
-            fi
-        fi
-    fi
+		unzip -o "/etc/v2ray-agent/xray/Xray-linux-64.zip" -d /etc/v2ray-agent/xray >/dev/null
+		rm -rf "/etc/v2ray-agent/xray/Xray-linux-64.zip"
+		chmod 655 /etc/v2ray-agent/xray/xray
+	else
+		echoContent green " ---> Xray-core版本:$(/etc/v2ray-agent/xray/xray --version | awk '{print $2}' | head -1)"
+		read -r -p "是否更新、升级？[y/n]:" reInstallXrayStatus
+		if [[ "${reInstallXrayStatus}" == "y" ]]; then
+			rm -f /etc/v2ray-agent/xray/xray
+			installXray "$1"
+		fi
+	fi
 }
 
 # v2ray版本管理
@@ -9755,17 +9728,18 @@ singBoxVersionManageMenu() {
 # 主菜单
 menu() {
     cd "$HOME" || exit
-    echoContent red "\n=============================================================="
-    echoContent green "当前版本：v3.3.9"
-    echoContent green "Github：https://github.com//sinian-liu/v2ray-agent"
-    echoContent red "安装完成后输入sinian即可打开脚本"
-    echoContent green "描述：八合一共存脚本\c"
-    showInstallStatus
-    checkWgetShowProgress
-    echoContent red "\n=========================== 推广区============================"
-    echoContent red "37VPS主机评测：https://1373737.xyz"
-    echoContent green "低价VPS ：https://my.frantech.ca/aff.php?aff=4337"
-    echoContent red "=============================================================="
+	echoContent red "\n=============================================================="
+	echoContent green "作者:sinian-liu"
+	echoContent green "当前版本：v3.3.9"
+	echoContent green "Github:https://github.com/sinian-liu/v2ray-agent-2.5.73"
+	echoContent green "描述:改版八合一共存脚本\c"
+	showInstallStatus
+	echoContent red "\n=============================================================="
+	echoContent red "                        推广区                      "
+	echoContent green "服务器推荐：https://my.frantech.ca/aff.php?aff=4337"
+	echoContent red "37VPS主机评测：https://www.1373737.xyz"
+	echoContent green "YouTube频道：https://www.youtube.com/@cyndiboy7881"
+	echoContent red "=============================================================="
     if [[ -n "${coreInstallType}" ]]; then
         echoContent yellow "1.重新安装"
     else
